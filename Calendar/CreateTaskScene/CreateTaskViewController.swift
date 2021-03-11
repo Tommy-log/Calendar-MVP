@@ -12,7 +12,7 @@ protocol CreateTaskViewProtocol {
     
 }
 
-class CreateTaskViewController: UIViewController, CreateTaskViewProtocol {
+class CreateTaskViewController: UIViewController, UITextFieldDelegate, CreateTaskViewProtocol{
     
     private var presenter: CreateTaskPresenterProtocol!
     var transmittedDate: Date?
@@ -43,9 +43,17 @@ class CreateTaskViewController: UIViewController, CreateTaskViewProtocol {
         self.presenter.popViewController()
     }
     
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+        super.touchesBegan(touches, with: event)
+    }
+   
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.titleTextField.delegate = self
+        self.descriptionTextField.delegate = self
         self.presenter.observerDailyTasksList(date: datePicker.date)
         warnLabel.alpha = 0
         guard transmittedDate != nil else { return }
@@ -67,5 +75,10 @@ class CreateTaskViewController: UIViewController, CreateTaskViewProtocol {
     }
     func setPresenter(presenter: CreateTaskPresenter) {
         self.presenter = presenter
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }
